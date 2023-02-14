@@ -3,6 +3,7 @@
 @date: 20201023
 @contact: jun21wangustc@gmail.com 
 """
+import argparse
 import sys
 sys.path.append('.')
 import logging.config
@@ -14,6 +15,14 @@ import cv2
 import numpy as np
 from core.model_loader.face_alignment.FaceAlignModelLoader import FaceAlignModelLoader
 from core.model_handler.face_alignment.FaceAlignModelHandler import FaceAlignModelHandler
+
+# add arguments
+parser = argparse.ArgumentParser(description='Face Alignment')
+parser.add_argument('--image_path', type=str, default='api_usage/test_images/test1.jpg', help='path to input image')
+parser.add_argument('--image_det_txt_path', type=str, default='api_usage/test_images/test1_detect_res.txt', help='path to input detect txt')
+parser.add_argument('--output_path', type=str, default='api_usage/temp/test1_landmark_res.jpg', help='path to save output image')
+parser.add_argument('--output_path_txt', type=str, default='api_usage/temp/test1_landmark_res.txt', help='path to save landmark txt')
+args = parser.parse_args()
 
 with open('config/model_conf.yaml') as f:
     model_conf = yaml.load(f)
@@ -50,8 +59,8 @@ if __name__ == '__main__':
     faceAlignModelHandler = FaceAlignModelHandler(model, 'cuda:0', cfg)
 
     # read image
-    image_path = 'api_usage/test_images/test1.jpg'
-    image_det_txt_path = 'api_usage/test_images/test1_detect_res.txt'
+    image_path = args.image_path
+    image_det_txt_path = args.image_det_txt_path
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
     with open(image_det_txt_path, 'r') as f:
         lines = f.readlines()
@@ -61,15 +70,15 @@ if __name__ == '__main__':
             det = np.asarray(list(map(int, line[0:4])), dtype=np.int32)
             landmarks = faceAlignModelHandler.inference_on_image(image, det)
 
-            save_path_img = 'api_usage/temp/test1_' + 'landmark_res' + str(i) + '.jpg'
-            save_path_txt = 'api_usage/temp/test1_' + 'landmark_res' + str(i) + '.txt'
+            save_path_img = args.output_path.split('.')[0] + str(i) + '.jpg'
+            save_path_txt = args.output_path_txt.split('.')[0] + str(i) + '.txt'
             image_show = image.copy()
             with open(save_path_txt, "w") as fd:
                 for (x, y) in landmarks.astype(np.int32):
                     cv2.circle(image_show, (x, y), 2, (255, 0, 0),-1)
                     line = str(x) + ' ' + str(y) + ' '
                     fd.write(line)
-            cv2.imwrite(save_path_img, image_show)
+            # cv2.imwrite(save_path_img, image_show)
     except Exception as e:
         logger.error('Face landmark failed!')
         logger.error(e)

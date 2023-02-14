@@ -3,6 +3,7 @@
 @date: 20201019
 @contact: jun21wangustc@gmail.com 
 """
+import argparse
 import sys
 sys.path.append('.')
 import logging.config
@@ -17,6 +18,13 @@ from core.model_handler.face_detection.FaceDetModelHandler import FaceDetModelHa
 
 with open('config/model_conf.yaml') as f:
     model_conf = yaml.load(f)
+
+# add arguments
+parser = argparse.ArgumentParser(description='Face Detection')
+parser.add_argument('--image_path', type=str, default='api_usage/test_images/test1.jpg', help='path to input image')
+parser.add_argument('--output_path', type=str, default='api_usage/temp/test1_detect_res.jpg', help='path to save output image')
+parser.add_argument('--output_path_txt', type=str, default='api_usage/temp/test1_detect_res.txt', help='path to save output image')
+args = parser.parse_args()
 
 if __name__ == '__main__':
     # common setting for all model, need not modify.
@@ -48,7 +56,7 @@ if __name__ == '__main__':
         logger.info('Successfully loaded the face detection model!')
 
     # read image
-    image_path = 'api_usage/test_images/test1.jpg'
+    image_path = args.image_path
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
     faceDetModelHandler = FaceDetModelHandler(model, 'cuda:0', cfg)
 
@@ -62,8 +70,8 @@ if __name__ == '__main__':
        logger.info('Successful face detection!')
 
     # gen result
-    save_path_img = 'api_usage/temp/test1_detect_res.jpg'
-    save_path_txt = 'api_usage/temp/test1_detect_res.txt'
+    save_path_img = args.output_path
+    save_path_txt = args.output_path_txt
     
     bboxs = dets
     with open(save_path_txt, "w") as fd:
@@ -73,8 +81,9 @@ if __name__ == '__main__':
                    str(box[4]) + " \n"
             fd.write(line)
 
-    for box in bboxs:
-        box = list(map(int, box))
-        cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 2)
-    cv2.imwrite(save_path_img, image)
+    # uncomment this line to generate detection image output
+    # for box in bboxs:
+    #     box = list(map(int, box))
+    #     cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 2)
+    # cv2.imwrite(save_path_img, image)
     logger.info('Successfully generate face detection results!')
