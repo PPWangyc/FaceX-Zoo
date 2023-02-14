@@ -1,9 +1,15 @@
 import os
 import subprocess
 
-data_storage_path='./Data/data'
-data_landmark_path='./Data/data_landmark'
-data_detect_path='./Data/data_detect'
+# get current folder path
+
+current_path = os.getcwd()
+print(current_path)
+data_storage_path= os.path.join(current_path, '/Data/data')
+data_landmark_path=os.path.join(current_path, '/Data/data_landmark')
+data_detect_path=os.path.join(current_path, '/Data/data_detect')
+
+print(data_storage_path)
 
 # read all .jpg files in the data_storage_path
 file_list = os.listdir(data_storage_path)
