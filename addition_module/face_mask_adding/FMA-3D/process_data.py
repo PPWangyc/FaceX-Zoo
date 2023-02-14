@@ -5,11 +5,11 @@ import subprocess
 
 current_path = os.getcwd()
 print(current_path)
-data_storage_path= os.path.join(current_path, '/Data/data')
-data_landmark_path=os.path.join(current_path, '/Data/data_landmark')
-data_detect_path=os.path.join(current_path, '/Data/data_detect')
+data_storage_path= os.path.join(current_path, 'Data/data')
+data_landmark_path=os.path.join(current_path, 'Data/data_landmark')
+data_detect_path=os.path.join(current_path, 'Data/data_detect')
 
-print(data_storage_path)
+
 
 # read all .jpg files in the data_storage_path
 file_list = os.listdir(data_storage_path)
@@ -33,3 +33,4 @@ for file in file_list:
     command = 'python api_usage/face_alignment.py --image_path ' + data_storage_path + '/' + file + ' --image_det_txt_path ' + data_detect_path + '/' + file_name + '_detect.txt' + ' --output_path_txt ' + data_landmark_path + '/' + file_name + '_landmark.txt'
     print(command)
     subprocess.call(command, shell=True)
+    command = 'python api_usage/face_alignment.py --image_p'
