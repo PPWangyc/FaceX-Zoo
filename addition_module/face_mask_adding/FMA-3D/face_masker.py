@@ -134,7 +134,7 @@ class FaceMasker:
         new_image = render_texture(vertices.T, new_colors.T, self.prn.triangles.T, h, w, c=3)
         return face_mask, new_image
         
-    def add_mask_one(self, image_path, face_lms, template_name, masked_face_path):
+    def add_mask_one(self, image_path, face_lms, template_name, masked_face_path, mask_matrix_path):
         """Add mask to one image.
 
         Args:
@@ -166,7 +166,14 @@ class FaceMasker:
         tmp = new_image * face_mask[:, :, np.newaxis]
         new_image = image * (1 - face_mask[:, :, np.newaxis]) + new_image * face_mask[:, :, np.newaxis]
         new_image = np.clip(new_image, -1, 1) #must clip to (-1, 1)!
-
+        # compare difference between new_image and raw_image
+        diff = np.abs(new_image - image)
+        # make mask_matrix tuple be 1 if it is not 0
+        mask_matrix = np.where(diff >=0.1, 1, 0)
+        # make mask_matrix to 2D array, ignore the third dimension.
+        mask_matrix = mask_matrix[:,:,0]
+        # save mask_matrix as txt file
+        np.savetxt(mask_matrix_path, mask_matrix, fmt='%d')
         imsave(masked_face_path, new_image) 
 
     def get_vertices(self, face_lms, image):
