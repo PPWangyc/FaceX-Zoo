@@ -83,11 +83,11 @@ def check_processed_upper_face(file_name, file_path='./processed_upper_face.txt'
 
 # for each .txt file, run the command to get the mask matrix
 for file in file_list:
-    if check_processed_upper_face(file):
-        print("File: " + file + " has been processed")
-        continue
-    print("Processing file: " + file)
     file_name = file.split('.')[0].split('_')[0]
+    if check_processed_upper_face(file_name):
+        print("File: " + file_name + " has been processed")
+        continue
+    print("Processing file: " + file_name)
     mask_matrix = get_mask_matrix(data_mask_matrix_path + '/' + file)
     # read the image
     image = imread(data_storage_path + '/' + file_name + '.jpg')
@@ -99,7 +99,7 @@ for file in file_list:
     # add upper face
     image = add_upper_face(image)
     save_image(image, file_name)
-    append_processed_upper_face(file)
-    print("Done with file: " + file)
+    append_processed_upper_face(file_name)
+    print("Done with file: " + file_name)
 
     

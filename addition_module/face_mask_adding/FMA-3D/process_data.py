@@ -43,7 +43,7 @@ def check_processed_name(file_name, file_path='./processed_files.txt'):
 for file in file_list:
     file_name = file.split('.')[0]
     if check_processed_name(file_name):
-        print('already processed ' + file)
+        print('already processed ' + file_name)
         continue
     # generate a random number from 0 - 7, include 0 and 7
     template_name = str(random.randint(0, 7)) + '.png'
