@@ -64,8 +64,28 @@ def save_image(image, file_name):
     np.savetxt(data_upper_face_matrix_path + '/' + file_name + '_upper_face_matrix.txt', image, fmt='%d')
     # imsave(data_upper_face_matrix_path + '/' + file_name + '_upper_face_matrix.jpg', image)
 
+# define a function: append processed filename processed_upper_face.txt
+def append_processed_upper_face(file_name, file_path='./processed_upper_face.txt'):
+    file_object = open(file_path, 'a')
+    file_object.write(file_name + '\n')
+
+# define a function: check if the file has been processed
+def check_processed_upper_face(file_name, file_path='./processed_upper_face.txt'):
+    file_object = open(file_path)
+    try:
+        all_the_text = file_object.read()
+        if file_name in all_the_text:
+            return True
+        else:
+            return False
+    finally:
+        file_object.close()
+
 # for each .txt file, run the command to get the mask matrix
 for file in file_list:
+    if check_processed_upper_face(file):
+        print("File: " + file + " has been processed")
+        continue
     print("Processing file: " + file)
     file_name = file.split('.')[0].split('_')[0]
     mask_matrix = get_mask_matrix(data_mask_matrix_path + '/' + file)
@@ -79,6 +99,7 @@ for file in file_list:
     # add upper face
     image = add_upper_face(image)
     save_image(image, file_name)
+    append_processed_upper_face(file)
     print("Done with file: " + file)
 
     
