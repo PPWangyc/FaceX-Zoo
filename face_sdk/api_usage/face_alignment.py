@@ -70,8 +70,8 @@ if __name__ == '__main__':
             det = np.asarray(list(map(int, line[0:4])), dtype=np.int32)
             landmarks = faceAlignModelHandler.inference_on_image(image, det)
 
-            save_path_img = args.output_path.split('.')[0] + str(i) + '.jpg'
-            save_path_txt = args.output_path_txt.split('.')[0] + str(i) + '.txt'
+            save_path_img = args.output_path
+            save_path_txt = args.output_path_txt
             image_show = image.copy()
             with open(save_path_txt, "w") as fd:
                 for (x, y) in landmarks.astype(np.int32):
