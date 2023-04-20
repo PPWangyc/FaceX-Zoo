@@ -1,5 +1,6 @@
 import torch
 import sys
+import os
 sys.path.append('/home/yanchen/facial-expression/fatigue')
 from data import FaceF_whole_video_2_labels
 import torchvision.utils as vutils
@@ -47,7 +48,7 @@ def get_attributions(net, wrap_net,  input_tensor, target):
 def read_image(path):
     image = cv2.imread(path, cv2.IMREAD_COLOR)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image = cv2.resize(image, (224, 224))
+    # image = cv2.resize(image, (224, 224))
     image = transforms.ToTensor()(image)
     # image = image.unsqueeze(0)
     return image.to(device)
@@ -70,6 +71,31 @@ def get_landmarks(path):
         ys.append(int(l[i+1]))
     return xs, ys
 
+def save_colors(colors):
+    with open("colors.txt", "w") as f:
+        for color in colors:
+            f.write(f"{color[0]} {color[1]} {color[2]}\n")
+
+def cal_avg_colors(colors, devide = 16):
+    # every color tuple divide by 16
+    return [(x[0] // devide, x[1] // devide, x[2] // devide) for x in colors]
+    
+
+def read_colors(path="colors.txt"):
+    colors = []
+    # if file does not exist, create it
+    if not os.path.exists(path):
+        color = (0, 0, 0)
+        for i in range(106):
+            colors.append(color)
+        save_colors(colors)
+    else:
+        with open(path, "r") as f:
+            for line in f.readlines():
+                l = line.strip().split()
+                colors.append((int(l[0]), int(l[1]), int(l[2])))
+    return colors
+
 def get_average_color(img, x, y, radius):
     total_pixels = 0
     total_color = np.array([0, 0, 0])
@@ -85,32 +111,9 @@ def get_average_color(img, x, y, radius):
     
     return tuple((total_color / total_pixels).astype(np.uint8))
 
-def get_std_landmarks():
-    normalized_landmarks = [
-        (0.233122, 0.160055), (0.254159, 0.248893), (0.284775, 0.334559), (0.319636, 0.415839),
-        (0.354911, 0.491390), (0.392334, 0.558926), (0.429429, 0.617122), (0.466262, 0.666746),
-        (0.504442, 0.706074), (0.544477, 0.734525), (0.585978, 0.750863), (0.629290, 0.754418),
-        (0.670685, 0.745223), (0.706721, 0.720698), (0.737645, 0.684476), (0.764038, 0.639712),
-        (0.786889, 0.586892), (0.805464, 0.528317), (0.821318, 0.465296), (0.833384, 0.398379),
-        (0.842929, 0.329090), (0.253881, 0.105165), (0.281615, 0.079201), (0.315796, 0.067706),
-        (0.351657, 0.069395), (0.385432, 0.084568), (0.621410, 0.083382), (0.655325, 0.067225),
-        (0.690735, 0.064993), (0.724386, 0.078356), (0.752264, 0.103659), (0.454566, 0.168815),
-        (0.455065, 0.216256), (0.455564, 0.263697), (0.455401, 0.311139), (0.417963, 0.338260),
-        (0.439894, 0.349165), (0.463647, 0.356797), (0.486994, 0.349165), (0.508925, 0.338260),
-        (0.331091, 0.213413), (0.352815, 0.203874), (0.377697, 0.203874), (0.399421, 0.213413),
-        (0.377697, 0.227526), (0.352815, 0.227526), (0.603775, 0.213413), (0.625499, 0.203874),
-        (0.650381, 0.203874), (0.672105, 0.213413), (0.650381, 0.227526), (0.625499, 0.227526),
-        (0.354911, 0.467890), (0.386436, 0.456422), (0.419271, 0.448467), (0.452106, 0.446575),
-        (0.484941, 0.447466), (0.518560, 0.456422), (0.551338, 0.467890), (0.518923, 0.498273),
-        (0.486089, 0.523677), (0.453255, 0.530631), (0.420421, 0.523677), (0.387587, 0.498273),
-        (0.368908, 0.467890), (0.420421, 0.472141), (0.452106, 0.473032), (0.483791, 0.472141),
-        (0.536304, 0.467890), (0.483791, 0.480747), (0.452106, 0.481638), (0.420421, 0.480747),
-        (0.206594, 0.159491), (0.227393, 0.136078), (0.254159, 0.131827), (0.280926, 0.136078),
-        (0.297891, 0.160055), (0.280926, 0.179095), (0.254159, 0.183346), (0.227393, 0.179095),
-        (0.782405, 0.159491), (0.763607, 0.136078), (0.736840, 0.131827), (0.710074, 0.136078),
-        (0.691275, 0.160055), (0.710074, 0.179095), (0.736840, 0.183346), (0.763607, 0.179095),
-        (0.307949, 0.225946), (0.331091, 0.213413), (0.354911, 0.213413), (0.377697, 0.225946),
-        (0.354911, 0.234683), (0.331091, 0.234683), (0.625499, 0.225946), (0.648286, 0.213413),
-        (0.672105, 0.213413), (0.695247, 0.225946), (0.672105, 0.234683), (0.648286, 0.234683)
-    ]
-    return normalized_landmarks
+def sum_colors(old, new):
+    sum_colors = []
+    for i in range(len(old)):
+        new_tuple = tuple(map(sum, zip(old[i], new[i])))
+        sum_colors.append(new_tuple)
+    return sum_colors

@@ -23,38 +23,31 @@ num  = args.image_path.split('/')[-1].split('.')[0].split('_')[-1]
 image_det_txt_path = 'api_usage/test_images/test1_detect_res.txt'
 # run command like: python ./api_usage/face_detection.py --image_path args.image_path --output_path_txt args.image_det_txt_path
 cmd = 'python ./api_usage/face_detect.py --image_path ' + args.image_path + ' --output_path_txt ' + args.image_det_txt_path
-# os.system(cmd)
+os.system(cmd)
 cmd = 'python ./api_usage/face_alignment.py --image_path ' + args.image_path + ' --image_det_txt_path ' + args.image_det_txt_path + ' --output_path ' + args.output_path + ' --output_path_txt ' + args.output_path_txt
-# os.system(cmd)
+os.system(cmd)
 
 xs, ys = get_landmarks(args.output_path_txt)
 img = read_image(args.image_path)
+img = Image.fromarray(img_to_numpy(img))
 
 img_hp = read_image(args.heatmap_path)
-img = Image.fromarray(img_to_numpy(img))
-img = Image.new('RGB', (224, 224), color='white')
 img_hp = Image.fromarray(img_to_numpy(img_hp))
+
 draw = ImageDraw.Draw(img)
-width, height = 224, 224
-# scaled_landmarks = [(x * width, y * height) for x, y in get_std_landmarks()]
-radius = 5
+
+radius = 1
 # def calculate the area value of the heatmap in the xs, ys
+colors = read_colors()
+temp = []
 for x, y in zip(xs, ys):
-    x = 2*x
-    y = 2*y
+    # x = 2*x
+    # y = 2*y
     # Get the color from the heatmap at the landmark position
-    color = get_average_color(img_hp, x, y, radius)
+    color = get_average_color(img_hp, x, y, 5)
+    temp.append(color)
+    draw.ellipse((x-radius, y-radius, x+radius, y+radius), fill=color)
 
-    # Draw a circle on the original face with the heatmap color
-    draw.ellipse([x - radius, y - radius, x + radius, y + radius], fill=color)
-
-
-# for x, y in zip(xs, ys):
-#     x = 2*x
-#     y = 2*y
-#     # Draw a circle on the original face with the heatmap color
-#     draw.ellipse([x - radius, y - radius, x + radius, y + radius], fill='black')
-
-# img.save('test.jpg')
-
-img.save('/home/yanchen/FaceX-Zoo/face_sdk/face_landmarks/{}.jpg'.format(num))
+img.save('output_{}.png'.format(num))
+colors = sum_colors(colors, temp)
+save_colors(colors)
