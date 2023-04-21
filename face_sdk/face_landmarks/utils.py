@@ -117,3 +117,19 @@ def sum_colors(old, new):
         new_tuple = tuple(map(sum, zip(old[i], new[i])))
         sum_colors.append(new_tuple)
     return sum_colors
+
+def get_avg_top_colors(colors_list, top=5):
+    colors = []
+    for i in range(106):
+        r = []
+        g = []
+        b = []
+        for j in range(8):
+            r.append(colors_list[j][i][0])
+            g.append(colors_list[j][i][1])
+            b.append(colors_list[j][i][2])
+        r = sorted(r, reverse=True)[:top]
+        g = sorted(g, reverse=True)[:top]
+        b = sorted(b, reverse=True)[:top]
+        colors.append((int(sum(r) / len(r)), int(sum(g) / len(g)), int(sum(b) / len(b))))
+    return colors

@@ -38,16 +38,22 @@ draw = ImageDraw.Draw(img)
 
 radius = 1
 # def calculate the area value of the heatmap in the xs, ys
-colors = read_colors()
-temp = []
+# colors = read_colors()
+# temp = []
+colors = []
 for x, y in zip(xs, ys):
     # x = 2*x
     # y = 2*y
     # Get the color from the heatmap at the landmark position
     color = get_average_color(img_hp, x, y, 5)
-    temp.append(color)
+    # temp.append(color)
+    colors.append(color)
     draw.ellipse((x-radius, y-radius, x+radius, y+radius), fill=color)
 
 img.save('output_{}.png'.format(num))
-colors = sum_colors(colors, temp)
+# colors = sum_colors(colors, temp)
+print(colors[2:5])
 save_colors(colors)
+
+def get_colors():
+    return colors
