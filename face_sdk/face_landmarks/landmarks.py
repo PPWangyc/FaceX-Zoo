@@ -45,7 +45,7 @@ for x, y in zip(xs, ys):
     # x = 2*x
     # y = 2*y
     # Get the color from the heatmap at the landmark position
-    color = get_average_color(img_hp, x, y, 5)
+    color = get_average_color(img_hp, x, y, 1)
     # temp.append(color)
     colors.append(color)
     draw.ellipse((x-radius, y-radius, x+radius, y+radius), fill=color)

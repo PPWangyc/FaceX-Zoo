@@ -30,9 +30,10 @@ for i in [0,1,5,6,8,10,16,17]:
 
 colors = get_avg_top_colors(color_list, 1)
 # colors = read_colors('/home/yanchen/FaceX-Zoo/face_sdk/colors.txt')
+save_colors(colors)
 draw = ImageDraw.Draw(img)
 # colors = cal_avg_colors(colors, 16 * len(zip_files))
 # colors = cal_avg_colors(colors, 18)
 for x, y, color in zip(xs, ys, colors):
-    draw.ellipse((x-3, y-3, x+3, y+3), fill=color)
+    draw.ellipse((x-2, y-2, x+2, y+2), fill=color)
 img.save('output.jpg')
