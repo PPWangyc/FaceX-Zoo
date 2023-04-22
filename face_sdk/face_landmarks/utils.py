@@ -133,3 +133,41 @@ def get_avg_top_colors(colors_list, top=5):
         b = sorted(b, reverse=True)[:top]
         colors.append((int(sum(r) / len(r)), int(sum(g) / len(g)), int(sum(b) / len(b))))
     return colors
+
+# def normalize_and_scale_colors(colors):
+#     # Find the maximum value for each color channel
+#     max_r = max(color[0] for color in colors)
+#     max_g = max(color[1] for color in colors)
+#     max_b = max(color[2] for color in colors)
+    
+#     # Normalize the color values to a range of 0 to 1
+#     normalized_colors = [(r/max_r, g/max_g, b/max_b) for r, g, b in colors]
+#     print(normalized_colors)
+#     # Scale the color values to include red by increasing the green and blue channels
+#     scaled_colors = [(int(r * 256 * 1.5), int((g) * 256), int((b) * 256)) for r, g, b in normalized_colors]
+#     for r, g, b in scaled_colors:
+#         if r > 0.5:
+#             r = r * 1.5
+
+
+#     return scaled_colors
+
+def normalize_color_map(input_colors):
+    min_color = min(input_colors, key=lambda x: x[0])  # Find the minimum red value
+    max_color = max(input_colors, key=lambda x: x[0])  # Find the maximum red value
+
+    normalized_colors = []
+    for color in input_colors:
+        r, g, b = color
+        normalized_r = (r - min_color[0]) / (max_color[0] - min_color[0])  # Normalize red value
+        if normalized_r > 0.8:
+            normalized_r = 1
+            g= g/2
+            b= b/2
+        elif normalized_r > 0.6:
+            normalized_r = 0.8
+            g=g/1.5
+            b=b/1.5
+        normalized_colors.append((int(normalized_r * 256), int(g), int(b)))
+        
+    return normalized_colors
